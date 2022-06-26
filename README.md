@@ -1,0 +1,1 @@
+# shoporusni_prompt
