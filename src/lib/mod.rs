@@ -18,7 +18,7 @@ pub fn get_data(url: url::Url, mut c: cache::Cache) -> Result<api::Statistics> {
         cache::Data::Outdated(ref s) => {
             info!("Cache is outdated");
             api::get_data(url)
-                .and_then(|d| serde_json::from_str(&d).map_err(|e| e.into()))
+                .and_then(|d| serde_json::from_str(&d).context("Error parsing API data"))
                 .and_then(|d: api::Statistics| {
                     info!("Got data from API, writing cache");
                     info!("Cache data: {:?}", &d);
@@ -26,7 +26,7 @@ pub fn get_data(url: url::Url, mut c: cache::Cache) -> Result<api::Statistics> {
                     info!("Cache written");
                     Ok(d)
                 })
-                .or_else(|_| serde_json::from_str(s).map_err(|e| e.into()))
+                .or_else(|_| serde_json::from_str(s).context("Error parsing cache data"))
         },
         cache::Data::None => {
             info!("Cache is empty");

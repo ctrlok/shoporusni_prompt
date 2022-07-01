@@ -4,7 +4,7 @@ use std::path::{PathBuf};
 use anyhow::{anyhow, Result};
 use humantime::Duration;
 use std::time::SystemTime;
-use log::{debug, info, warn};
+use log::{debug, error, info, warn};
 
 // Create a new instance of Cache and read the cache from the file
 pub fn read(cache_dir: PathBuf, ttl: humantime::Duration) -> Result<Cache> {
@@ -12,7 +12,7 @@ pub fn read(cache_dir: PathBuf, ttl: humantime::Duration) -> Result<Cache> {
     debug!("Init cache: {:?}", &cache);
     info!("Reading cache from fle: {:?}", cache.file.as_path());
     cache.read()?;
-    debug!("Cache read: {:?}", &cache);
+    debug!("Read cache from {:?}", cache.data);
     Ok(cache)
 }
 
@@ -37,6 +37,21 @@ impl Cache {
         file.write_all(data.as_bytes())?;
         Ok(())
     }
+
+    // pub fn update(&mut self, data: &str) -> Result<()> {
+    //     let mut file = File::open(&self.file)?;
+    //     let mut data = String::new();
+    //     file.read_to_string(&mut data)?;
+    //     match serde_json::from_str::<Data>(&data) {
+    //         Ok(data) => {
+    //             self.data = data;
+    //             Ok(())
+    //         },
+    //         Err(e) => {
+    //             error!("Error parsing cache data: {}", e);
+    //         }
+    //     }
+    // }
 
     pub fn read(&mut self) -> Result<&Self> {
         match File::open(&self.file) {
